@@ -1,4 +1,4 @@
-const BASE = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const BASE = (process.env.REACT_APP_API_URL || 'http://localhost:8080') + '/api';
 
 async function req(path, options = {}) {
   const res = await fetch(BASE + path, {
@@ -22,6 +22,16 @@ export const getAtivos = () => req('/ativos');
 export const getAtivo = (id) => req(`/ativos/${id}`);
 export const updatePreco = (id, preco) => req(`/ativos/${id}/preco`, { method: 'PATCH', body: JSON.stringify({ preco }) });
 
+// Cotacoes Alpha Vantage
+export const sincronizarPrecos = async () => {
+  const resultado = await req('/cotacoes/atualizar-todos', { method: 'POST' });
+  const mapa = {};
+  (resultado?.cotacoes || []).forEach(c => { mapa[c.ticker] = c; });
+  return mapa;
+};
+export const getCotacao = (ticker) => req(`/cotacoes/${ticker}`);
+export const getHistoricoCotacao = (ticker) => req(`/cotacoes/${ticker}/historico`);
+
 // Clientes
 export const getClientes = () => req('/clientes');
 export const getCliente = (id) => req(`/clientes/${id}`);
@@ -36,4 +46,4 @@ export const getOrdens = (id) => req(`/corretoras/${id}/ordens`);
 export const createCorretora = (data) => req('/corretoras', { method: 'POST', body: JSON.stringify(data) });
 export const addAtivoPortfolio = (id, data) => req(`/corretoras/${id}/portfolio`, { method: 'POST', body: JSON.stringify(data) });
 
-export const CORRETORA_ID = 1; // ID fixo da corretora principal
+export const CORRETORA_ID = 1;

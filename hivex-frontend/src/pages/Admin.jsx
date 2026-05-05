@@ -4,8 +4,6 @@ import { getEmpresas, createEmpresa, getAtivos, getPortfolio, addAtivoPortfolio,
 import { useToast } from '../components/Toast';
 import * as api from '../services/api';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-
 export default function Admin() {
   const toast = useToast();
   const [tab, setTab] = useState('empresa');
@@ -26,7 +24,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
 
   const load = () => Promise.all([getEmpresas(), getAtivos(), getPortfolio(CORRETORA_ID)])
-    .then(([e, a, p]) => { setEmpresas(e || []); setAtivos(a || []); setPortfolio(p || []); });
+    .then(([e, a, p]) => { setEmpresas(e || []); setAtivos(a || []); setPortfolio(p || []); })
+    .catch(() => {});
 
   useEffect(() => { load(); }, []);
 
@@ -51,17 +50,17 @@ export default function Admin() {
       };
       if (tipoAtivo === 'acao') {
         await api.getAtivos(); // just to verify connection
-        await fetch(`${BASE_URL}/ativos/acao`, {
+        await fetch('http://localhost:8080/api/ativos/acao', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ ...base, percentualCapital: Number(ativoForm.percentualCapital), dividendYield: Number(ativoForm.dividendYield) })
         });
       } else if (tipoAtivo === 'fii') {
-        await fetch(`${BASE_URL}/ativos/fii`, {
+        await fetch('http://localhost:8080/api/ativos/fii', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ ...base, tipo: ativoForm.tipo, rendimentoMensal: Number(ativoForm.rendimentoMensal) })
         });
       } else {
-        await fetch(`${BASE_URL}/ativos/titulo`, {
+        await fetch('http://localhost:8080/api/ativos/titulo', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ ...base, vencimento: ativoForm.vencimento, taxaJuros: Number(ativoForm.taxaJuros) })
         });

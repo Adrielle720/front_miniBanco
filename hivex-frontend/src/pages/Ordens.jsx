@@ -11,6 +11,7 @@ export default function Ordens() {
   useEffect(() => {
     getOrdens(CORRETORA_ID)
       .then(o => setOrdens((o || []).reverse()))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

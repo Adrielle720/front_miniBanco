@@ -17,7 +17,8 @@ export default function Carteira() {
 
   useEffect(() => {
     Promise.all([getClientes(), getPortfolio(CORRETORA_ID)])
-      .then(([c, p]) => { setClientes(c || []); setPortfolio(p || []); });
+      .then(([c, p]) => { setClientes(c || []); setPortfolio(p || []); })
+      .catch(() => {});
   }, []);
 
   const cliente = clientes.find(c => String(c.id) === String(clienteSel));
